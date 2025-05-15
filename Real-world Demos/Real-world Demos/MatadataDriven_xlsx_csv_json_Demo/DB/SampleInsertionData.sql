@@ -1,34 +1,60 @@
-INSERT INTO config.PipelineDetails 
-(Spec_Code, Description, Source_Type, Data_Source, Load_Type, Metadata_Config, Additional_Configurations, Target_Type, Target_Name, Sheet_Name, Row_Range)
-VALUES 
--- CSV File Example
-('SPEC_12345', 'Inflation-related BO for sales data', 'File', 'CSV', 'Delta', 
- '{"delimiter": ",", "row_terminator": "\\n", "escape_character": "\\""}', 
- 'Encoding: UTF-8', 
- 'Fabric Table', 'Sales_Data', NULL, '1-1000'),  -- No Sheet Name, Row Range 1 to 1000
+INSERT INTO [config].[BusinessSourceDetails]
+    (
+      [Spec_Code]
+    , [Source_Location_Type]
+    , [Source_Location_Details]
+    , [Target_Location_Type]
+    , [Target_Location_Details]
+    , [Spec_Code_ID]
+    ) values('BO2', 'ONELAKE','BO2','BO2','BO2',10)
+----------------------------------------------------
 
--- XLSX File Example (with Sheet Name and Row Range)
-('SPEC_67890', 'BO for sales data in Excel', 'File', 'XLSX', 'Full', 
- '{"delimiter": ",", "sheet_name": "SalesData", "row_range": "1-500"}', 
- 'Encoding: UTF-8', 
- 'Data Lake', 'Excel_SalesData', 'SalesData', '1-500'),
+update
+  
+    [config].[PipelineDetails] 
+    set spec_Code ='BO3'
 
--- API Example
-('SPEC_24680', 'BO for real-time stock market inflation data', 'API', 'JSON', 'Incremental', 
- '{"endpoint": "/data?updated_since={date}", "auth_type": "OAuth", "pagination": "cursor"}', 
- 'Auth Type: OAuth', 
- 'Data Lake', 'API_Stock_Market', NULL, NULL),
+    where spec_Code='BO4'
 
--- Database Table Example
-('SPEC_54321', 'BO for tracking inflation-adjusted customer orders', 'Database', 'Tables', 'Full', 
- '{"primary_key": "ID", "partition_key": "Date", "query": "SELECT Col1, Col3 FROM table1 WHERE created_date > ''2024-11-08''"}', 
- 'Index Strategy: Clustered Index', 
- 'SQL DB', 'Customer_Orders', NULL, NULL);
+    update
+    [config].[PipelineDetails] 
+    set Source_type ='CSV'
+
+    where Source_type='File'
 
 
+    update
+  
+    [config].[PipelineDetails] 
+    set Data_Source ='file2.csv'
+    where Data_Source='File2.csv'
 
-/*update config.PipelineDetails 
-set Metadata_Config = (select Replace(Metadata_Config,'{"ColumnDelimiter": ";"','{"ColumnDelimiter": ","') from config.PipelineDetails where id=10)
-where id=9
 
-select Metadata_Config from config.PipelineDetails where id=9 */
+  
+    update [config].[PipelineDetails] 
+    set Metadata_config =N'{"ColumnDelimiter":",","RowDelimiter":"\n","Encoding":"UTF-8","FirstRowAsHeader":true,"EscapeCharacter":"\\","QuoteCharacter":"\"","NullValue":"NULL","CompressionType":"None","FileExtension":".csv","SearchStart":"0","TableActionOption":"None"}'
+    where Data_Source='file1.csv'
+
+
+update 
+   [config].[PipelineDetails] set Row_Range='A1:D6' where id=11
+
+-- Or, to do it for all rows ending in “.csv”:
+UPDATE [config].[PipelineDetails]
+SET Source_Type = 'File'
+WHERE Source_Type = 'CSV'
+
+
+-- Update Id = 8: set FirstRowAsHeader to false
+UPDATE [config].[PipelineDetails]
+SET Metadata_Config = N'{"CompressionType":"None","ColumnDelimiter":",","RowDelimiter":"\r\n","Encoding":"UTF-8","EscapeCharacter":"¬","QuoteCharacter":"\"","FirstRowAsHeader":true,"NullValue":"","CompressionLevel":"Optimal","FileExtension":".xlsx","SearchStart":"0","TableActionOption":"None"}'
+WHERE Id = 12;
+
+
+-- Update Id = 8: set FirstRowAsHeader to false
+UPDATE [config].[PipelineDetails]
+SET Metadata_Config = N'{"CompressionType":"None","ColumnDelimiter":",","RowDelimiter":"\r\n","Encoding":"UTF-8","EscapeCharacter":"¬","QuoteCharacter":"\"","FirstRowAsHeader":true,"NullValue":"","CompressionLevel":"Optimal","FileExtension":".xlsx","SearchStart":"0","TableActionOption":"None"}'
+WHERE Id = 12;
+GO
+
+
