@@ -1,7 +1,4 @@
-
-
 Create schema config
-
 Go
 SET ANSI_NULLS ON
 GO
