@@ -1,0 +1,141 @@
+{
+    "name": "PL_MAIN",
+    "objectId": "6131f781-a2ad-402c-953c-7fcade352804",
+    "properties": {
+        "activities": [
+            {
+                "name": "GetBusinesOutcomeConfig",
+                "type": "Lookup",
+                "dependsOn": [],
+                "policy": {
+                    "timeout": "0.12:00:00",
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "typeProperties": {
+                    "source": {
+                        "type": "FabricSqlDatabaseSource",
+                        "sqlReaderQuery": {
+                            "value": "SELECT \n    pd.[Id],\n    pd.[Spec_Code],\n    pd.[Description],\n    pd.[Source_Type],\n    pd.[Data_Source],\n    pd.[Load_Type],\n    pd.[Metadata_Config],\n    pd.[Target_Type],\n    pd.[Target_Name],\n    pd.[Sheet_Name],\n    pd.[Row_Range],\n    pd.[Created_At],\n    pd.[Updated_At],\n    bsd.[Source_Location_Type],\n    bsd.[Source_Location_Details],\n    bsd.[Target_Location_Type],\n    bsd.[Target_Location_Details],\n    bsd.[Spec_Code_ID]\nFROM \n    [config].[PipelineDetails] pd\nJOIN \n    [config].[BusinessSourceDetails] bsd\n    ON pd.[Spec_Code] = bsd.[Spec_Code]\nWHERE \n    pd.[Spec_Code] = '@{pipeline().parameters.Spec_code}'\nORDER BY \n    pd.[Id];\n",
+                            "type": "Expression"
+                        },
+                        "queryTimeout": "02:00:00",
+                        "partitionOption": "None"
+                    },
+                    "firstRowOnly": false,
+                    "datasetSettings": {
+                        "annotations": [],
+                        "connectionSettings": {
+                            "name": "ControlDB",
+                            "properties": {
+                                "annotations": [],
+                                "type": "FabricSqlDatabase",
+                                "typeProperties": {
+                                    "workspaceId": "ad7254e8-448e-4489-bfa6-1fdfab67f144",
+                                    "artifactId": "0122dda9-5e06-4d03-b535-0f6ae51c4bff"
+                                },
+                                "externalReferences": {
+                                    "connection": "90dfb268-c735-4735-a450-cc19b01c4392"
+                                }
+                            }
+                        },
+                        "type": "FabricSqlDatabaseTable",
+                        "schema": []
+                    }
+                }
+            },
+            {
+                "name": "ForEachBusinessDataset",
+                "type": "ForEach",
+                "dependsOn": [
+                    {
+                        "activity": "GetBusinesOutcomeConfig",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "items": {
+                        "value": "@activity('GetBusinesOutcomeConfig').output.value",
+                        "type": "Expression"
+                    },
+                    "isSequential": true,
+                    "activities": [
+                        {
+                            "name": "ProcessEachDatasource",
+                            "type": "ExecutePipeline",
+                            "dependsOn": [],
+                            "policy": {
+                                "secureInput": false
+                            },
+                            "typeProperties": {
+                                "pipeline": {
+                                    "referenceName": "699870d1-39b0-491c-acea-591414ae56d4",
+                                    "type": "PipelineReference"
+                                },
+                                "waitOnCompletion": true,
+                                "parameters": {
+                                    "Range": {
+                                        "value": "@item().Row_Range",
+                                        "type": "Expression"
+                                    },
+                                    "SheetName": {
+                                        "value": "@item().Sheet_Name",
+                                        "type": "Expression"
+                                    },
+                                    "TargetName": {
+                                        "value": "@item().Target_Name",
+                                        "type": "Expression"
+                                    },
+                                    "SourceName": {
+                                        "value": "@item().Data_Source",
+                                        "type": "Expression"
+                                    },
+                                    "SourcePath": {
+                                        "value": "@item().Source_Location_Details",
+                                        "type": "Expression"
+                                    },
+                                    "TargerPath": {
+                                        "value": "@item().Target_Location_Details",
+                                        "type": "Expression"
+                                    },
+                                    "config": {
+                                        "value": "@item().Metadata_Config",
+                                        "type": "Expression"
+                                    },
+                                    "SourceType": {
+                                        "value": "@item().Source_Type",
+                                        "type": "Expression"
+                                    },
+                                    "TargetType": {
+                                        "value": "@item().Target_Type",
+                                        "type": "Expression"
+                                    },
+                                    "Operation": {
+                                        "value": "@item().Load_Type",
+                                        "type": "Expression"
+                                    }
+                                }
+                            }
+                        }
+                    ]
+                }
+            }
+        ],
+        "parameters": {
+            "Spec_code": {
+                "type": "string"
+            }
+        },
+        "variables": {
+            "config": {
+                "type": "String"
+            }
+        },
+        "lastModifiedByObjectId": "dcdd1466-f77b-405d-acd2-b00b1f3fb2ad",
+        "lastPublishTime": "2025-05-11T00:19:06Z"
+    }
+}
