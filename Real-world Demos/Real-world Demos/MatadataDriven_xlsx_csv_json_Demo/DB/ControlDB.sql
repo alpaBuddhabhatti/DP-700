@@ -1,23 +1,8 @@
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
-CREATE TABLE [config].[DeltaLoadTable](
-	[Id] [int] NOT NULL,
-	[Modified_Date] [datetime] NULL,
-	[Min_Load_Date] [datetime] NULL,
-	[Max_Load_Date] [datetime] NULL,
-	[Page_Number] [int] NULL,
-	[Last_Loaded_Id] [int] NULL
-) ON [PRIMARY]
-GO
-ALTER TABLE [config].[DeltaLoadTable] ADD PRIMARY KEY CLUSTERED 
-(
-	[Id] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, IGNORE_DUP_KEY = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
-GO
 
 
+Create schema config
+
+Go
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -51,10 +36,10 @@ ALTER TABLE [config].[PipelineDetails] ADD  DEFAULT (getdate()) FOR [Updated_At]
 GO
 
 
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
+-------------------------------------------------------
+----------------------------------------------------
+
+
 CREATE TABLE [config].[BusinessSourceDetails](
 	[Id] [int] IDENTITY(1,1) NOT NULL,
 	[Spec_Code] [nvarchar](255) NULL,
@@ -70,3 +55,23 @@ ALTER TABLE [config].[BusinessSourceDetails] ADD PRIMARY KEY CLUSTERED
 	[Id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, IGNORE_DUP_KEY = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+------------------------------------------------------------------------
+-----------------------------------------------------------
+
+
+CREATE TABLE [config].[DeltaLoadTable](
+	[Id] [int] NOT NULL,
+	[Modified_Date] [datetime] NULL,
+	[Min_Load_Date] [datetime] NULL,
+	[Max_Load_Date] [datetime] NULL,
+	[Page_Number] [int] NULL,
+	[Last_Loaded_Id] [int] NULL
+) ON [PRIMARY]
+GO
+ALTER TABLE [config].[DeltaLoadTable] ADD PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, IGNORE_DUP_KEY = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+GO
+
+
