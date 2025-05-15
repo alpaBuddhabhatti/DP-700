@@ -1,0 +1,352 @@
+{
+    "name": "PL_CHILD_MAIN",
+    "objectId": "699870d1-39b0-491c-acea-591414ae56d4",
+    "properties": {
+        "activities": [
+            {
+                "name": "RowRange",
+                "type": "SetVariable",
+                "dependsOn": [],
+                "policy": {
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "typeProperties": {
+                    "variableName": "Range",
+                    "value": {
+                        "value": "@pipeline().parameters.Range",
+                        "type": "Expression"
+                    }
+                }
+            },
+            {
+                "name": "Settings",
+                "type": "SetVariable",
+                "dependsOn": [],
+                "policy": {
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "typeProperties": {
+                    "variableName": "settings",
+                    "value": {
+                        "value": "@pipeline().parameters.config",
+                        "type": "Expression"
+                    }
+                }
+            },
+            {
+                "name": "SourceType",
+                "type": "Switch",
+                "dependsOn": [
+                    {
+                        "activity": "RowRange",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    },
+                    {
+                        "activity": "Settings",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "on": {
+                        "value": "@pipeline().parameters.SourceType\n",
+                        "type": "Expression"
+                    },
+                    "cases": [
+                        {
+                            "value": "Excel",
+                            "activities": [
+                                {
+                                    "name": "MoveExcelDataToLH_Table",
+                                    "type": "Copy",
+                                    "dependsOn": [],
+                                    "policy": {
+                                        "timeout": "0.12:00:00",
+                                        "retry": 0,
+                                        "retryIntervalInSeconds": 30,
+                                        "secureOutput": false,
+                                        "secureInput": false
+                                    },
+                                    "typeProperties": {
+                                        "source": {
+                                            "type": "ExcelSource",
+                                            "storeSettings": {
+                                                "type": "LakehouseReadSettings",
+                                                "recursive": true,
+                                                "enablePartitionDiscovery": false
+                                            },
+                                            "datasetSettings": {
+                                                "annotations": [],
+                                                "linkedService": {
+                                                    "name": "testpoc",
+                                                    "properties": {
+                                                        "annotations": [],
+                                                        "type": "Lakehouse",
+                                                        "typeProperties": {
+                                                            "workspaceId": "ad7254e8-448e-4489-bfa6-1fdfab67f144",
+                                                            "artifactId": "fbf823a0-4f37-458f-840d-b4f2ddfbad87",
+                                                            "rootFolder": "Files"
+                                                        }
+                                                    }
+                                                },
+                                                "type": "Excel",
+                                                "typeProperties": {
+                                                    "sheetName": {
+                                                        "value": "@pipeline().parameters.SheetName",
+                                                        "type": "Expression"
+                                                    },
+                                                    "location": {
+                                                        "type": "LakehouseLocation",
+                                                        "fileName": {
+                                                            "value": "@pipeline().parameters.SourceName",
+                                                            "type": "Expression"
+                                                        },
+                                                        "folderPath": {
+                                                            "value": "@pipeline().parameters.SourcePath",
+                                                            "type": "Expression"
+                                                        }
+                                                    },
+                                                    "range": {
+                                                        "value": "@variables('Range')",
+                                                        "type": "Expression"
+                                                    },
+                                                    "firstRowAsHeader": {
+                                                        "value": "@json(variables('settings'))['FirstRowAsHeader']\n",
+                                                        "type": "Expression"
+                                                    },
+                                                    "nullValue": {
+                                                        "value": "@json(variables('settings'))['NullValue']\n",
+                                                        "type": "Expression"
+                                                    }
+                                                },
+                                                "schema": []
+                                            }
+                                        },
+                                        "sink": {
+                                            "type": "LakehouseTableSink",
+                                            "tableActionOption": {
+                                                "value": "@string(json(variables('settings'))['TableActionOption'])\n",
+                                                "type": "Expression"
+                                            },
+                                            "partitionOption": "None",
+                                            "datasetSettings": {
+                                                "annotations": [],
+                                                "linkedService": {
+                                                    "name": "testpoc",
+                                                    "properties": {
+                                                        "annotations": [],
+                                                        "type": "Lakehouse",
+                                                        "typeProperties": {
+                                                            "workspaceId": "ad7254e8-448e-4489-bfa6-1fdfab67f144",
+                                                            "artifactId": "fbf823a0-4f37-458f-840d-b4f2ddfbad87",
+                                                            "rootFolder": "Tables"
+                                                        }
+                                                    }
+                                                },
+                                                "type": "LakehouseTable",
+                                                "schema": [],
+                                                "typeProperties": {
+                                                    "table": {
+                                                        "value": "@concat(pipeline().parameters.TargetName)",
+                                                        "type": "Expression"
+                                                    }
+                                                }
+                                            }
+                                        },
+                                        "enableStaging": false,
+                                        "translator": {
+                                            "type": "TabularTranslator",
+                                            "typeConversion": true,
+                                            "typeConversionSettings": {
+                                                "allowDataTruncation": true,
+                                                "treatBooleanAsNumber": false
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        },
+                        {
+                            "value": "CSV",
+                            "activities": [
+                                {
+                                    "name": "MoveCSVDataToLH_Table",
+                                    "type": "Copy",
+                                    "dependsOn": [],
+                                    "policy": {
+                                        "timeout": "0.12:00:00",
+                                        "retry": 0,
+                                        "retryIntervalInSeconds": 30,
+                                        "secureOutput": false,
+                                        "secureInput": false
+                                    },
+                                    "typeProperties": {
+                                        "source": {
+                                            "type": "DelimitedTextSource",
+                                            "storeSettings": {
+                                                "type": "LakehouseReadSettings",
+                                                "recursive": true,
+                                                "enablePartitionDiscovery": false
+                                            },
+                                            "formatSettings": {
+                                                "type": "DelimitedTextReadSettings"
+                                            },
+                                            "datasetSettings": {
+                                                "annotations": [],
+                                                "linkedService": {
+                                                    "name": "testpoc",
+                                                    "properties": {
+                                                        "annotations": [],
+                                                        "type": "Lakehouse",
+                                                        "typeProperties": {
+                                                            "workspaceId": "ad7254e8-448e-4489-bfa6-1fdfab67f144",
+                                                            "artifactId": "fbf823a0-4f37-458f-840d-b4f2ddfbad87",
+                                                            "rootFolder": "Files"
+                                                        }
+                                                    }
+                                                },
+                                                "type": "DelimitedText",
+                                                "typeProperties": {
+                                                    "location": {
+                                                        "type": "LakehouseLocation",
+                                                        "fileName": {
+                                                            "value": "@pipeline().parameters.SourceName",
+                                                            "type": "Expression"
+                                                        },
+                                                        "folderPath": {
+                                                            "value": "@pipeline().parameters.SourcePath",
+                                                            "type": "Expression"
+                                                        }
+                                                    },
+                                                    "columnDelimiter": {
+                                                        "value": "@json(variables('settings'))['ColumnDelimiter']",
+                                                        "type": "Expression"
+                                                    },
+                                                    "rowDelimiter": {
+                                                        "value": "@json(variables('settings'))['RowDelimiter']",
+                                                        "type": "Expression"
+                                                    },
+                                                    "encodingName": {
+                                                        "value": "@json(variables('settings'))['Encoding']",
+                                                        "type": "Expression"
+                                                    },
+                                                    "escapeChar": {
+                                                        "value": "@json(variables('settings'))['EscapeCharacter']",
+                                                        "type": "Expression"
+                                                    },
+                                                    "firstRowAsHeader": {
+                                                        "value": "@json(variables('settings'))['FirstRowAsHeader']",
+                                                        "type": "Expression"
+                                                    },
+                                                    "nullValue": {
+                                                        "value": "@json(variables('settings'))['NullValue']",
+                                                        "type": "Expression"
+                                                    },
+                                                    "quoteChar": {
+                                                        "value": "@json(variables('settings'))['QuoteCharacter']",
+                                                        "type": "Expression"
+                                                    }
+                                                },
+                                                "schema": []
+                                            }
+                                        },
+                                        "sink": {
+                                            "type": "LakehouseTableSink",
+                                            "tableActionOption": "OverwriteSchema",
+                                            "partitionOption": "None",
+                                            "datasetSettings": {
+                                                "annotations": [],
+                                                "linkedService": {
+                                                    "name": "testpoc",
+                                                    "properties": {
+                                                        "annotations": [],
+                                                        "type": "Lakehouse",
+                                                        "typeProperties": {
+                                                            "workspaceId": "ad7254e8-448e-4489-bfa6-1fdfab67f144",
+                                                            "artifactId": "fbf823a0-4f37-458f-840d-b4f2ddfbad87",
+                                                            "rootFolder": "Tables"
+                                                        }
+                                                    }
+                                                },
+                                                "type": "LakehouseTable",
+                                                "schema": [],
+                                                "typeProperties": {
+                                                    "table": {
+                                                        "value": "@pipeline().parameters.TargetName",
+                                                        "type": "Expression"
+                                                    }
+                                                }
+                                            }
+                                        },
+                                        "enableStaging": false,
+                                        "translator": {
+                                            "type": "TabularTranslator",
+                                            "typeConversion": true,
+                                            "typeConversionSettings": {
+                                                "allowDataTruncation": true,
+                                                "treatBooleanAsNumber": false
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    ],
+                    "defaultActivities": []
+                }
+            }
+        ],
+        "parameters": {
+            "Range": {
+                "type": "string",
+                "defaultValue": "B2:D5"
+            },
+            "SheetName": {
+                "type": "string",
+                "defaultValue": "Sheet1"
+            },
+            "TargetName": {
+                "type": "string"
+            },
+            "SourceName": {
+                "type": "string"
+            },
+            "SourcePath": {
+                "type": "string"
+            },
+            "TargerPath": {
+                "type": "string"
+            },
+            "config": {
+                "type": "string"
+            },
+            "SourceType": {
+                "type": "string"
+            },
+            "TargetType": {
+                "type": "string"
+            },
+            "Operation": {
+                "type": "string"
+            }
+        },
+        "variables": {
+            "Range": {
+                "type": "String"
+            },
+            "settings": {
+                "type": "String"
+            },
+            "val1": {
+                "type": "String"
+            }
+        },
+        "lastModifiedByObjectId": "dcdd1466-f77b-405d-acd2-b00b1f3fb2ad",
+        "lastPublishTime": "2025-05-15T10:30:03Z"
+    }
+}
