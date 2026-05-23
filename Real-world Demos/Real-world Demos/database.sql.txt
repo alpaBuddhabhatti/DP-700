@@ -1,0 +1,84 @@
+--CREATE DATABASE RetailERP;
+--GO
+
+USE RetailERP;
+GO
+
+-- Customers
+CREATE TABLE Customers (
+    CustomerID INT PRIMARY KEY,
+    CustomerName VARCHAR(100),
+    Segment VARCHAR(50),
+    Country VARCHAR(50),
+    City VARCHAR(50),
+    SignupDate DATE,
+    IsActive BIT
+);
+
+INSERT INTO Customers VALUES
+(101,'Contoso Retail Ltd','Enterprise','UK','London','2021-03-10',1),
+(102,'Northwind Traders','SMB','UK','Manchester','2022-01-12',1),
+(103,'Fabrikam Stores','Enterprise','USA','New York','2020-06-21',1),
+(104,'Adventure Mart','SMB','Canada','Toronto','2023-02-14',1),
+(105,'Tailspin Toys','Startup','UK','Birmingham','2024-01-08',1);
+
+
+-- Stores
+CREATE TABLE Stores (
+    StoreID INT PRIMARY KEY,
+    StoreName VARCHAR(100),
+    Region VARCHAR(50),
+    ManagerName VARCHAR(100),
+    OpenDate DATE
+);
+
+INSERT INTO Stores VALUES
+(1,'London Central','South','Emma Clark','2019-01-01'),
+(2,'Manchester Hub','North','Daniel Smith','2020-05-10'),
+(3,'Birmingham Outlet','Midlands','Olivia Brown','2021-09-15'),
+(4,'Toronto Downtown','Canada','Lucas White','2018-03-20');
+
+
+-- Customer Segments
+CREATE TABLE CustomerSegments (
+    SegmentID INT PRIMARY KEY,
+    SegmentName VARCHAR(50),
+    DiscountRate DECIMAL(5,2)
+);
+
+INSERT INTO CustomerSegments VALUES
+(1,'Enterprise',15.00),
+(2,'SMB',10.00),
+(3,'Startup',5.00);
+
+
+-- Segment Mapping
+CREATE TABLE CustomerSegmentMapping (
+    CustomerID INT,
+    SegmentID INT,
+    AssignedDate DATE
+);
+
+INSERT INTO CustomerSegmentMapping VALUES
+(101,1,'2021-03-10'),
+(102,2,'2022-01-12'),
+(103,1,'2020-06-21'),
+(104,2,'2023-02-14'),
+(105,3,'2024-01-08');
+
+
+-- Customer Contacts
+CREATE TABLE CustomerContacts (
+    ContactID INT PRIMARY KEY,
+    CustomerID INT,
+    ContactName VARCHAR(100),
+    Email VARCHAR(100),
+    Phone VARCHAR(20)
+);
+
+INSERT INTO CustomerContacts VALUES
+(1,101,'James Carter','james@contoso.com','07123456789'),
+(2,102,'Sophia Green','sophia@northwind.com','07234567891'),
+(3,103,'Michael Lee','michael@fabrikam.com','07345678912'),
+(4,104,'Emily Davis','emily@adventuremart.com','07456789123'),
+(5,105,'William Scott','william@tailspintoys.com','07567891234');
