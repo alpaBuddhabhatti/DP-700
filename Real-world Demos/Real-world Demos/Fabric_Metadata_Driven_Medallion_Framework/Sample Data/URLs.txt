@@ -1,0 +1,11 @@
+https://services.odata.org/V4/Northwind/Northwind.svc/Products
+
+https://services.odata.org/V4/Northwind/Northwind.svc/Categories 
+
+https://services.odata.org/V4/Northwind/Northwind.svc/$metadata
+
+
+https://services.odata.org/V4/Northwind/Northwind.svc/Products?$top=10
+
+
+https://services.odata.org/V4/Northwind/Northwind.svc/Products?$expand=Category
